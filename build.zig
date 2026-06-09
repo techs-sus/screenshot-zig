@@ -41,6 +41,17 @@ pub fn build(b: *std.Build) void {
         .target = target,
     });
 
+    const wio = b.dependency("wio", .{
+        .target = target,
+        .optimize = optimize,
+
+        .enable_framebuffer = true,
+        .enable_vulkan = true,
+        .unix_backends = @as([]const u8, "wayland"),
+
+        .audio = true,
+    });
+
     // Here we define an executable. An executable needs to have a root module
     // which needs to expose a `main` function. While we could add a main function
     // to the module defined above, it's sometimes preferable to split business
@@ -79,6 +90,7 @@ pub fn build(b: *std.Build) void {
                 // can be extremely useful in case of collisions (which can happen
                 // importing modules from different packages).
                 .{ .name = "default", .module = mod },
+                .{ .name = "wio", .module = wio.module("wio") },
             },
         }),
     });
